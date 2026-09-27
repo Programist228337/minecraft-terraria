@@ -7,7 +7,7 @@ forgedatadev
 --assetIndex
 17
 --assetsDir
-C:\\Users\\velic\\.gradle\\caches\\neoformruntime\\assets
+C:\\Users\\Slava\\.gradle\\caches\\neoformruntime\\assets
 --gameDir
 .
 --fml.fmlVersion
@@ -24,6 +24,6 @@ C:\\Users\\velic\\.gradle\\caches\\neoformruntime\\assets
 minecraftterrariamod
 --all
 --output
-C:\\Users\\velic\\Desktop\\minecraft-terraria\\src\\generated\\resources
+E:\\IdeaProjects\\minecraft-terraria\\src\\generated\\resources
 --existing
-C:\\Users\\velic\\Desktop\\minecraft-terraria\\src\\main\\resources
+E:\\IdeaProjects\\minecraft-terraria\\src\\main\\resources

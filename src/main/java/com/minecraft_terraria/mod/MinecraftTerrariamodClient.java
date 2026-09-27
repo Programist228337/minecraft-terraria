@@ -81,11 +81,7 @@ public class MinecraftTerrariamodClient {
 
                     String trackName = getTrackNameForBiome(currentBiome);
 
-                    // Одновременный вызов тоста и принудительного воспроизведения музыки
-                    mc.getToasts().clear();
-                    mc.getToasts().addToast(new TerrariaMusicToast(trackName));
-
-                    // 1. ОДНОВРЕМЕННЫЙ ВЫЗОВ УВЕДОМЛЕНИЯ
+                    // Вызов тоста
                     mc.getToasts().clear();
                     mc.getToasts().addToast(new TerrariaMusicToast(trackName));
 
@@ -98,10 +94,10 @@ public class MinecraftTerrariamodClient {
                             1.0F,                                             // Тональность (Pitch)
                             net.minecraft.util.RandomSource.create(),         // Рандомайзер игры
                             true,                                             // Бесконечный повтор (Loop)
-                            0,                                   // Задержка перед стартом (0 = мгновенно)
-                            SimpleSoundInstance.Attenuation.NONE, // Звук не затухает от расстояния
-                            0.0D, 0.0D, 0.0D,                    // Координаты (0,0,0 так как относительный)
-                            true                                 // Звук играет прямо в голове (relative)
+                            0,                                                // Задержка перед стартом (0 = мгновенно)
+                            SimpleSoundInstance.Attenuation.NONE,             // Звук не затухает от расстояния
+                            0.0D, 0.0D, 0.0D,                           // Координаты (0,0,0 так как относительный)
+                            true                                              // Звук играет прямо в голове (relative)
                     );
                     mc.getSoundManager().play(currentTrack);
                 }
@@ -143,7 +139,7 @@ public class MinecraftTerrariamodClient {
             guiGraphics.fill(0, 0, 160, 32, 0xCC2B2B2B);
             guiGraphics.fill(0, 31, 160, 32, 0xFFD4AF37);
 
-            guiGraphics.drawString(toastComponent.getMinecraft().font, Component.literal("§6Now Playing"), 34, 5, 0xFFFFFFFF, false);
+            guiGraphics.drawString(toastComponent.getMinecraft().font, Component.translatable("minecraftterrariamod.toast"), 34, 5, 0xFFFFFFFF, false);
             guiGraphics.drawString(toastComponent.getMinecraft().font, Component.literal("§f" + trackName), 34, 17, 0xFFFFFFFF, false);
 
             ItemStack recordStack = new ItemStack(Items.MUSIC_DISC_STAL);

@@ -1,4 +1,3 @@
-/locate biome minecraft:desert
 /tp @s -2148 66 2139
 /gamemode survival
 /locate biome minecraft:desert
@@ -46,4 +45,6 @@
 /tp @s -2215 72 2123
 /playsound minecraftterrariamod:music_desert
 /playsound minecraftterrariamod:music_menu
+/playsound minecraftterrariamod:music_desert
+/playsound minecraft:ui.toast.in
 /playsound minecraftterrariamod:music_desert

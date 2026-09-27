@@ -20,9 +20,9 @@ public class TerrariaMusicManager {
     private static boolean firstLoad = true;
     private static boolean inMenu = false;
 
-    public static void init() {
-        MinecraftTerrariamod.LOGGER.info("[TerrariaMusic] Музыкальный менеджер Террарии успешно инициализирован!");
-    }
+//    public static void init() {
+//        MinecraftTerrariamod.LOGGER.info("[TerrariaMusic] Музыкальный менеджер Террарии успешно инициализирован!");
+//    }
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();

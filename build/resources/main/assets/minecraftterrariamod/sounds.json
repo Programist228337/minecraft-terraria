@@ -30,7 +30,7 @@
     "sounds": [
       {
         "type": "file",
-        "name": "minecraftterrariamod:music/ocean",
+
         "stream": true
       }
     ]
