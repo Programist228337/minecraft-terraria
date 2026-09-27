@@ -1,11 +1,3 @@
-/tp @s -2148 66 2139
-/gamemode survival
-/locate biome minecraft:desert
-/tp @s -2148 66 2139
-/tp @s -2215 72 2123
-/locate biome minecraft:ocean
-/tp @s -1703 74 983
-/tp @s -2215 72 2123
 /locate biome minecraft:desert
 /tp @s -2215 72 2123
 /locate biome minecraft:forest
@@ -48,3 +40,11 @@
 /playsound minecraftterrariamod:music_desert
 /playsound minecraft:ui.toast.in
 /playsound minecraftterrariamod:music_desert
+/playsound minecraftterrariamod:music_ocean
+/tp @a ~ 64 ~
+/tp @a 0 64 0
+/tp 0 64 0
+/playsound minecraftterrariamod:music.forest
+/enchant @a minecraft:fire_protection 4
+/effect give @a minecraft:regeneration 1
+/effect give @a minecraft:regeneration 1 255

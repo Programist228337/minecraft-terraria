@@ -1,35 +1,35 @@
 {
-  "music_menu": {
+  "music.menu": {
     "sounds": [
       {
-        "type": "file",
+        "category": "music",
         "name": "minecraftterrariamod:music/menu",
         "stream": true
       }
     ]
   },
-  "music_forest": {
+  "music.forest": {
     "sounds": [
       {
-        "type": "file",
+        "category": "music",
         "name": "minecraftterrariamod:music/forest",
         "stream": true
       }
     ]
   },
-  "music_desert": {
+  "music.desert": {
     "sounds": [
       {
-        "type": "file",
+        "category": "music",
         "name": "minecraftterrariamod:music/desert",
         "stream": true
       }
     ]
   },
-  "music_ocean": {
+  "music.ocean": {
     "sounds": [
       {
-        "type": "file",
+        "category": "music",
         "name": "minecraftterrariamod:music/ocean",
         "stream": true
       }

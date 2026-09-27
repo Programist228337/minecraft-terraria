@@ -8,6 +8,8 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import static com.minecraft_terraria.mod.ModSounds.SOUNDS;
+
 @Mod(MinecraftTerrariamod.MODID)
 public class MinecraftTerrariamod {
     public static final String MODID = "minecraftterrariamod";
@@ -17,6 +19,10 @@ public class MinecraftTerrariamod {
         modEventBus.addListener(this::commonSetup);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         ModSounds.register(modEventBus);
+    }
+    // Метод для инициализации (вызывается в главном классе мода)
+    public static void register(IEventBus eventBus) {
+        SOUNDS.register(eventBus);
     }
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("TERRARIA MUSIC MOD ЗАПУЩЕН!");
