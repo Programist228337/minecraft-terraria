@@ -1,0 +1,49 @@
+/locate biome minecraft:desert
+/tp @s -2148 66 2139
+/gamemode survival
+/locate biome minecraft:desert
+/tp @s -2148 66 2139
+/tp @s -2215 72 2123
+/locate biome minecraft:ocean
+/tp @s -1703 74 983
+/tp @s -2215 72 2123
+/locate biome minecraft:desert
+/tp @s -2215 72 2123
+/locate biome minecraft:forest
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/gamemode creative
+/playsound minecraft:weather.rain.above
+/playsound
+/playsound minecraft:music.overworld.desert
+/playsound minecraft:entity.sniffer.digging_stop
+/playsound minecraft:stop
+/time set day
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/playsound minecraft:entity.sniffer.digging_stop
+/playsound
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/playsound minecraftterrariamod:music_forest
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/playsound minecraftterrariamod:music_forest
+/playsound minecraftterrariamod:music_desert
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/tp @s -1607 72 1547
+/tp @s -2215 72 2123
+/playsound minecraftterrariamod:music_desert
+/playsound minecraftterrariamod:music_menu
+/playsound minecraftterrariamod:music_desert

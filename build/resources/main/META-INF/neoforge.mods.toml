@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="MIT"
+
+[[mods]]
+modId="minecraftterrariamod"
+version="1.0.0"
+displayName="Minecraft Terraria Music Mod"
+description='''
+Мод, который заменяет стандартную музыку Майнкрафта на треки из Террарии!
+'''
+
+[[dependencies.minecraftterrariamod]]
+modId="neoforge"
+type="required"
+versionRange="[21,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.minecraftterrariamod]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="BOTH"

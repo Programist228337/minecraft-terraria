@@ -1,0 +1,38 @@
+{
+  "music_menu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/menu",
+        "stream": true
+      }
+    ]
+  },
+  "music_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/forest",
+        "stream": true
+      }
+    ]
+  },
+  "music_desert": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/desert",
+        "stream": true
+      }
+    ]
+  },
+  "music_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/ocean",
+        "stream": true
+      }
+    ]
+  }
+}

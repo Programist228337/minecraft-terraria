@@ -1,0 +1,13 @@
+{
+  "itemGroup.minecraftterrariamod": "Example Mod Tab",
+  "block.minecraftterrariamod.example_block": "Example Block",
+  "item.minecraftterrariamod.example_item": "Example Item",
+
+  "minecraftterrariamod.configuration.title": "Minecraft-Terraria-mod Configs",
+  "minecraftterrariamod.configuration.section.minecraftterrariamod.common.toml": "Minecraft-Terraria-mod Configs",
+  "minecraftterrariamod.configuration.section.minecraftterrariamod.common.toml.title": "Minecraft-Terraria-mod Configs",
+  "minecraftterrariamod.configuration.items": "Item List",
+  "minecraftterrariamod.configuration.logDirtBlock": "Log Dirt Block",
+  "minecraftterrariamod.configuration.magicNumberIntroduction": "Magic Number Text",
+  "minecraftterrariamod.configuration.magicNumber": "Magic Number"
+}
