@@ -1,0 +1,577 @@
+{
+  "music.menu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/menu",
+        "stream": true
+      }
+    ]
+  },
+  "music.forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.desert": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/desert",
+        "stream": true
+      }
+    ]
+  },
+  "music.ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.flower_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/flower_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.badlands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/badlands",
+        "stream": true
+      }
+    ]
+  },
+  "music.bamboo_jungle": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/bamboo_jungle",
+        "stream": true
+      }
+    ]
+  },
+  "music.basalt_deltas": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/basalt_deltas",
+        "stream": true
+      }
+    ]
+  },
+  "music.beach": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/beach",
+        "stream": true
+      }
+    ]
+  },
+  "music.birch_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/birch_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.cherry_grove": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/cherry_grove",
+        "stream": true
+      }
+    ]
+  },
+  "music.cold_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/cold_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.crimson_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/crimson_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.dark_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/dark_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.deep_cold_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/deep_cold_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.deep_dark": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/deep_dark",
+        "stream": true
+      }
+    ]
+  },
+  "music.deep_frozen_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/deep_frozen_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.deep_lukewarm_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/deep_lukewarm_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.deep_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/deep_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.dripstone_caves": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/dripstone_caves",
+        "stream": true
+      }
+    ]
+  },
+  "music.end_barrens": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/end_barrens",
+        "stream": true
+      }
+    ]
+  },
+  "music.end_highlands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/end_highlands",
+        "stream": true
+      }
+    ]
+  },
+  "music.end_midlands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/end_midlands",
+        "stream": true
+      }
+    ]
+  },
+  "music.eroded_badlands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/eroded_badlands",
+        "stream": true
+      }
+    ]
+  },
+  "music.frozen_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/frozen_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.frozen_peaks": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/frozen_peaks",
+        "stream": true
+      }
+    ]
+  },
+  "music.frozen_river": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/frozen_river",
+        "stream": true
+      }
+    ]
+  },
+  "music.ice_spikes": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/ice_spikes",
+        "stream": true
+      }
+    ]
+  },
+  "music.jagged_peaks": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/jagged_peaks",
+        "stream": true
+      }
+    ]
+  },
+  "music.jungle": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/jungle",
+        "stream": true
+      }
+    ]
+  },
+  "music.lukewarm_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/lukewarm_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.lush_caves": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/lush_caves",
+        "stream": true
+      }
+    ]
+  },
+  "music.mangrove_swamp": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/mangrove_swamp",
+        "stream": true
+      }
+    ]
+  },
+  "music.mountain_grove": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/mountain_grove",
+        "stream": true
+      }
+    ]
+  },
+  "music.mountain_meadow": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/mountain_meadow",
+        "stream": true
+      }
+    ]
+  },
+  "music.mushroom_fields": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/mushroom_fields",
+        "stream": true
+      }
+    ]
+  },
+  "music.nether_wastes": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/nether_wastes",
+        "stream": true
+      }
+    ]
+  },
+  "music.old_growth_birch_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/old_growth_birch_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.old_growth_pine_taiga": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/old_growth_pine_taiga",
+        "stream": true
+      }
+    ]
+  },
+  "music.old_growth_spruce_taiga": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/old_growth_spruce_taiga",
+        "stream": true
+      }
+    ]
+  },
+  "music.plains": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/plains",
+        "stream": true
+      }
+    ]
+  },
+  "music.river": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/river",
+        "stream": true
+      }
+    ]
+  },
+  "music.savanna": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/savanna",
+        "stream": true
+      }
+    ]
+  },
+  "music.savanna_plateau": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/savanna_plateau",
+        "stream": true
+      }
+    ]
+  },
+  "music.small_end_islands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/small_end_islands",
+        "stream": true
+      }
+    ]
+  },
+  "music.snowy_beach": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/snowy_beach",
+        "stream": true
+      }
+    ]
+  },
+  "music.snowy_plains": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/snowy_plains",
+        "stream": true
+      }
+    ]
+  },
+  "music.snowy_slopes": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/snowy_slopes",
+        "stream": true
+      }
+    ]
+  },
+  "music.snowy_taiga": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/snowy_taiga",
+        "stream": true
+      }
+    ]
+  },
+  "music.soul_sand_valley": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/soul_sand_valley",
+        "stream": true
+      }
+    ]
+  },
+  "music.sparse_jungle": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/sparse_jungle",
+        "stream": true
+      }
+    ]
+  },
+  "music.stony_peaks": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/stony_peaks",
+        "stream": true
+      }
+    ]
+  },
+  "music.stony_shore": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/stony_shore",
+        "stream": true
+      }
+    ]
+  },
+  "music.sunflower_plains": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/sunflower_plains",
+        "stream": true
+      }
+    ]
+  },
+  "music.swamp": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/swamp",
+        "stream": true
+      }
+    ]
+  },
+  "music.taiga": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/taiga",
+        "stream": true
+      }
+    ]
+  },
+  "music.the_end": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/the_end",
+        "stream": true
+      }
+    ]
+  },
+  "music.warm_ocean": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/warm_ocean",
+        "stream": true
+      }
+    ]
+  },
+  "music.warped_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/warped_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.windswept_hills": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/windswept_hills",
+        "stream": true
+      }
+    ]
+  },
+  "music.windswept_forest": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/windswept_forest",
+        "stream": true
+      }
+    ]
+  },
+  "music.windswept_gravelly_hills": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/windswept_gravelly_hills",
+        "stream": true
+      }
+    ]
+  },"music.windswept_savanna": {
+    "sounds": [
+    {
+      "type": "file",
+      "name": "minecraftterrariamod:music/windswept_savanna",
+      "stream": true
+    }
+    ]
+  },
+  "music.wooded_badlands": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/wooded_badlands",
+        "stream": true
+      }
+    ]
+  }
+}
