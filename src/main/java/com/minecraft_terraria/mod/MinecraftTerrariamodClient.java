@@ -5,10 +5,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.sounds.MusicManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.Music;
-import net.minecraft.sounds.Musics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -16,8 +16,29 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @EventBusSubscriber(modid = MinecraftTerrariamod.MODID, value = Dist.CLIENT)
 public class MinecraftTerrariamodClient {
+
+    // Вспомогательный класс для хранения музыки вместе с её названием
+    private record BiomeMusic(Music music, String title) {}
+    // Список соотношений биомов и музыки
+    private static final Map<ResourceLocation, BiomeMusic> BIOME_MUSIC_MAP = new HashMap<>();
+    static {
+        // Регистрируйте здесь любые биомы и соответствующую им музыку
+        registerBiomeMusic("minecraft:forest", "music.forest", "Forest theme");
+        registerBiomeMusic("minecraft:desert", "music.desert", "Desert theme");
+        registerBiomeMusic("minecraft:ocean", "music.ocean", "Ocean theme");
+    }
+
+    private static void registerBiomeMusic(String biomeId, String musicRegistryName, String title) {
+        BIOME_MUSIC_MAP.put(
+                ResourceLocation.parse(biomeId),
+                new BiomeMusic(ModSounds.getMusic(musicRegistryName), title)
+        );
+    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -26,11 +47,20 @@ public class MinecraftTerrariamodClient {
         // Обязательно проверяем, что игрок в мире, чтобы избежать NullPointerException
         if (minecraft.player == null || minecraft.level == null) return;
 
-        // Вставьте ваше заданное условие (например, игрок вошел в определенную зону или структуру)
-        if (minecraft.player.blockPosition().equals(new BlockPos(0, 64, 0))) {
-            MusicManager musicManager = minecraft.getMusicManager();
+        // Проверка раз в секунду
+        if (minecraft.level.getGameTime() % 20 != 0) return;
+        // Получение биома игрока
+        ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
+                .unwrapKey()
+                .map(ResourceKey::location)
+                .orElse(null);
+        // Проверка ,что биом существует
+        if (biomeKey == null) return;
+        MusicManager musicManager = minecraft.getMusicManager();
 
-            Music targetMusic = ModSounds.getMusic("music.forest");
+        if (BIOME_MUSIC_MAP.containsKey(biomeKey)) {
+            BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
+            Music targetMusic = entry.music();
 
             // Проверяем, не играет ли уже эта конкретная музыка, чтобы не перезапускать её каждый тик
             if (!musicManager.isPlayingMusic(targetMusic)) {
@@ -40,12 +70,12 @@ public class MinecraftTerrariamodClient {
                 // Форсированно запускаем новую фоновую музыку
                 musicManager.startPlaying(targetMusic);
                 // Уведомление о смене музыки
+
                 minecraft.getToasts().clear();
-                minecraft.getToasts().addToast(new TerrariaMusicToast("music forest"));
+                minecraft.getToasts().addToast(new TerrariaMusicToast(entry.title()));
             }
         } else {
             // Если условие не выполнено, останавливаем музыку
-            MusicManager musicManager = minecraft.getMusicManager();
             musicManager.stopPlaying();
         }
     }

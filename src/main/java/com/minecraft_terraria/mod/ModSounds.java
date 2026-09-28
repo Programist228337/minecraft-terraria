@@ -7,7 +7,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,17 +21,9 @@ public class ModSounds {
     // ==========================================
     // СПИСОК МУЗЫКИ
     // ==========================================
-    public static final DeferredHolder<SoundEvent, SoundEvent> FOREST_EVENT = registerMusic("music.forest");
-    public static final DeferredHolder<SoundEvent, SoundEvent> CORRUPTION_EVENT = registerMusic("music.corruption");
-    public static final DeferredHolder<SoundEvent, SoundEvent> UNDERGROUND_EVENT = registerMusic("music.underground");
-    public static final DeferredHolder<SoundEvent, SoundEvent> DESERT_EVENT = registerMusic("music.desert");
-
-//    public static final DeferredHolder<SoundEvent, SoundEvent> FOREST_MUSIC =
-//            SOUNDS.register("music.forest",
-//            () -> SoundEvent.createVariableRangeEvent(
-//                    ResourceLocation.fromNamespaceAndPath(MinecraftTerrariamod.MODID, "music.forest")
-//            )
-//    );
+    public static final DeferredHolder<SoundEvent, SoundEvent> FOREST_AMBIENT = registerMusic("music.forest");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DESERT_AMBIENT = registerMusic("music.desert");
+    public static final DeferredHolder<SoundEvent, SoundEvent> OCEAN_AMBIENT = registerMusic("music.ocean");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerMusic(String name) {
         DeferredHolder<SoundEvent, SoundEvent> holder = SOUNDS.register(name, () ->
@@ -44,17 +35,7 @@ public class ModSounds {
         return holder;
     }
 
-//    public static Music FOREST = new Music(
-//            ModSounds.FOREST_MUSIC, // SoundEvent вашего трека
-//            0,                                    // Минимальная пауза перед следующим треком
-//            0,                                    // Максимальная пауза
-//            true                                  // Заменять ли текущую играющую музыку?
-//    );
-
-    /**
-     * ОДИН УНИВЕРСАЛЬНЫЙ ГЕТТЕР ДЛЯ ВСЕЙ МУЗЫКИ.
-     * Возвращает объект Music по его строковому ID (например, "music.forest")
-     */
+    // ОДИН УНИВЕРСАЛЬНЫЙ ГЕТТЕР ДЛЯ ВСЕЙ МУЗЫКИ. Возвращает объект Music по его строковому ID
     public static Music getMusic(String name) {
         if (!MUSIC_REGISTRY.containsKey(name)) {
             throw new IllegalArgumentException("Музыка с именем " + name + " не зарегистрирована в ModSounds!");
@@ -69,7 +50,7 @@ public class ModSounds {
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("SoundEvent реестра не найден для ключа: " + targetKey));
 
-            // Создаем ванильный объект Music (0, 0, true — мгновенный запуск с заменой ванильной музыки)
+            // Создаем объект Music
             Music musicInstance = new Music(holder, 0, 0, true);
             MUSIC_REGISTRY.put(name, musicInstance);
         }
