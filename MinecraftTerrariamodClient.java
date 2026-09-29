@@ -17,6 +17,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 // ирпортиировал  новый метод посмотрим что сделал новый ии честно говоря хз если что в самом конце тут этот метод
 import net.neoforged.neoforge.client.event.SelectMusicEvent;
+// добавил ещё импорты для меню 
+import java.util.List;
+import java.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -186,6 +189,58 @@ public class MinecraftTerrariamodClient {
         // Если записи нет, ничего не делаем, и игра играет свою обычную музыку.
         if (entry != null) {
             event.setMusic(entry.music());
+        }
     }
-}
+    //
+    // тут будет у нас меню ток тест и я хочу добавть не 1 песню а рандом из нескольких 
+    // Список треков главного меню (имена из sounds.json / ModSounds)
+    private static final List<String> MENU_TRACKS = List.of("music.menu", "music.menu2", "music.menu3");
+    private static final Random RANDOM = new Random();
+    // Трек меню, который мы выбрали сейчас. null означает "ещё не выбран".
+    // Нужен, потому что onSelectMusic вызывается каждый тик: без запоминания
+    // игра выбирала бы новый случайный трек 20 раз в секунду и постоянно перезапускала музыку.
+    private static Music currentMenuMusic = null;
+    // Выбирает случайный трек меню, стараясь не повторять предыдущий
+    private static Music chooseMenuMusic() {
+        Music previous = currentMenuMusic;
+        Music next;
+        do {
+             next = ModSounds.getMusic(MENU_TRACKS.get(RANDOM.nextInt(MENU_TRACKS.size())));
+        } while (MENU_TRACKS.size() > 1 && next == previous); // повторяем, пока не выпадет другой
+        return next;
+    }
+    @SubscribeEvent
+    public static void onSelectMusic(SelectMusicEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+
+        // ---- ГЛАВНОЕ МЕНЮ ----
+        // Нет игрока или мира, значит, мы в меню
+        if (minecraft.player == null || minecraft.level == null) {
+            MusicManager musicManager = minecraft.getMusicManager();
+
+            // Выбираем новый трек только в двух случаях:
+            // 1) трек ещё не выбирался (только что открыли меню);
+            // 2) выбранный трек не играет (закончился или ещё не стартовал).
+            // Пока трек играет, ничего не меняем, чтобы игра не перезапускала музыку.
+            if (currentMenuMusic == null || !musicManager.isPlayingMusic(currentMenuMusic)) {
+                currentMenuMusic = chooseMenuMusic();
+            }
+
+            event.setMusic(currentMenuMusic);
+            return;
+    }
+        // Мы в мире: сбрасываем выбор, чтобы при возврате в меню трек выбирался заново
+        currentMenuMusic = null;
+        // ---- МУЗЫКА БИОМОВ (без изменений) ----
+        ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
+            .unwrapKey()
+            .map(ResourceKey::location)
+            .orElse(null);
+        if (biomeKey == null) return;
+
+        BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
+        if (entry != null) {
+            event.setMusic(entry.music());
+        }
+    }
 }
