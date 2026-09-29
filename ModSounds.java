@@ -83,6 +83,8 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_GRAVELLY_HILLS_AMBIENT = registerMusic("music.windswept_gravelly_hills");
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_SAVANNA_AMBIENT = registerMusic("music.windswept_savanna");
     public static final DeferredHolder<SoundEvent, SoundEvent> WOODED_BADLANDS_AMBIENT = registerMusic("music.wooded_badlands");
+    // была добавленна строчка с базальтовыми дельтами ии пидор ебаный просто (im love gemeni <3)
+    public static final DeferredHolder<SoundEvent, SoundEvent> BASALT_DELTAS_AMBIENT = registerMusic("music.basalt_deltas");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerMusic(String name) {
         DeferredHolder<SoundEvent, SoundEvent> holder = SOUNDS.register(name, () ->
