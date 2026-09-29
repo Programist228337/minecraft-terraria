@@ -15,6 +15,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+// ирпортиировал  новый метод посмотрим что сделал новый ии честно говоря хз если что в самом конце тут этот метод
+import net.neoforged.neoforge.client.event.SelectMusicEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,8 +61,8 @@ public class MinecraftTerrariamodClient {
         registerBiomeMusic( "minecraft:lukewarm_ocean",  "music.lukewarm_ocean",  "Lukewarm ocean theme");
         registerBiomeMusic( "minecraft:lush_caves",  "music.lush_caves",  "Lush caves theme");
         registerBiomeMusic( "minecraft:mangrove_swamp",  "music.mangrove_swamp",  "Mangrove swamp theme");
-        registerBiomeMusic( "minecraft:mountain_grove",  "music.mountain_grove",  "Mountain grove theme");
-        registerBiomeMusic( "minecraft:mountain_meadow",  "music.mountain_meadow",  "Mountain meadow theme");
+        registerBiomeMusic( "minecraft:grove",  "music.mountain_grove",  "Mountain grove theme");// тут тоже самое так что в случае чего можешь изменить в случае не работы из (music.monutrain_grove) ну думаю догадаешься
+        registerBiomeMusic( "minecraft:meadow",  "music.mountain_meadow",  "Mountain meadow theme");// исправленно возможно клауд навоздуханил  но хуй его знает (пояснение то есть в minecraft:medow он берёт из основы майна и из этого возмоно оно не работало хз не знаю как там на самом деле)
         registerBiomeMusic( "minecraft:mushroom_fields",  "music.mushroom_fields",  "Mushroom fields theme");
         registerBiomeMusic( "minecraft:nether_wastes",  "music.nether_wastes",  "Nether wastes theme");
         registerBiomeMusic( "minecraft:old_growth_birch_forest",  "music.old_growth_birch_forest",  "Old growth birch forest theme");
@@ -90,6 +92,8 @@ public class MinecraftTerrariamodClient {
         registerBiomeMusic( "minecraft:windswept_gravelly_hills",  "music.windswept_gravelly_hills",  "Windswept gravelly hills theme");
         registerBiomeMusic( "minecraft:windswept_savanna",  "music.windswept_savanna",  "Windswept savanna theme");
         registerBiomeMusic( "minecraft:wooded_badlands",  "music.wooded_badlands",  "Wooded badlands theme");
+        registerBiomeMusic("minecraft:basalt_deltas", "music.basalt_deltas", "Basalt deltas theme"); // добавил базальтовые дельты ебаный ии в говно смотрел и нихуя не добавил стоит просмотреть его тоже
+        
 
     }
 
@@ -161,4 +165,27 @@ public class MinecraftTerrariamodClient {
             return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
         }
     }
+        // SelectMusicEvent вызывается каждый раз, когда игра выбирает, какую музыку играть.
+        // Через него мы говорим игре: "в этом биоме играй нашу, а не ванильную".
+        // Заставляем ванильный MusicManager выбирать нашу музыку — иначе в Энде он её глушит
+        @SubscribeEvent
+        public static void onSelectMusic(SelectMusicEvent event) {
+            Minecraft minecraft = Minecraft.getInstance();
+            // Если игрок ещё не в мире (главное меню, загрузка) - ничего не делаем,
+            // иначе получим NullPointerException
+        if (minecraft.player == null || minecraft.level == null) return;
+        // Узнаём ID биома, в котором стоит игрок (например, minecraft:the_end)
+        ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
+            .unwrapKey()    // достаём ключ биома из обёртки
+            .map(ResourceKey::location)     // превращаем его в ResourceLocation
+            .orElse(null);      // если ключа нет - null
+        if (biomeKey == null) return;
+          // Ищем в вашей карте запись для этого биома
+        BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
+        // Если запись есть - подменяем музыку, которую выбрала игра, на нашу.
+        // Если записи нет, ничего не делаем, и игра играет свою обычную музыку.
+        if (entry != null) {
+            event.setMusic(entry.music());
+    }
+}
 }
