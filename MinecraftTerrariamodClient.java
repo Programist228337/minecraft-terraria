@@ -15,6 +15,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.SelectMusicEvent;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,8 @@ import java.util.Map;
 @EventBusSubscriber(modid = MinecraftTerrariamod.MODID, value = Dist.CLIENT)
 public class MinecraftTerrariamodClient {
 
+    private static final List<Music> MENU_MUSIC_LIST = new ArrayList<>();
+    private static final java.util.Random RANDOM = new java.util.Random();
     // Вспомогательный класс для хранения музыки вместе с её названием
     private record BiomeMusic(Music music, String title) {}
     // Список соотношений биомов и музыки
@@ -59,8 +64,8 @@ public class MinecraftTerrariamodClient {
         registerBiomeMusic( "minecraft:lukewarm_ocean",  "music.lukewarm_ocean",  "Lukewarm ocean theme");
         registerBiomeMusic( "minecraft:lush_caves",  "music.lush_caves",  "Lush caves theme");
         registerBiomeMusic( "minecraft:mangrove_swamp",  "music.mangrove_swamp",  "Mangrove swamp theme");
-        registerBiomeMusic( "minecraft:mountain_grove",  "music.mountain_grove",  "Mountain grove theme");
-        registerBiomeMusic( "minecraft:mountain_meadow",  "music.mountain_meadow",  "Mountain meadow theme");
+        registerBiomeMusic( "minecraft:grove",  "music.mountain_grove",  "Mountain grove theme");
+        registerBiomeMusic( "minecraft:meadow",  "music.mountain_meadow",  "Mountain meadow theme");
         registerBiomeMusic( "minecraft:mushroom_fields",  "music.mushroom_fields",  "Mushroom fields theme");
         registerBiomeMusic( "minecraft:nether_wastes",  "music.nether_wastes",  "Nether wastes theme");
         registerBiomeMusic( "minecraft:old_growth_birch_forest",  "music.old_growth_birch_forest",  "Old growth birch forest theme");
@@ -90,6 +95,10 @@ public class MinecraftTerrariamodClient {
         registerBiomeMusic( "minecraft:windswept_gravelly_hills",  "music.windswept_gravelly_hills",  "Windswept gravelly hills theme");
         registerBiomeMusic( "minecraft:windswept_savanna",  "music.windswept_savanna",  "Windswept savanna theme");
         registerBiomeMusic( "minecraft:wooded_badlands",  "music.wooded_badlands",  "Wooded badlands theme");
+        registerBiomeMusic("minecraft:basalt_deltas", "music.basalt_deltas", "Basalt deltas theme");
+        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu"));
+        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu2"));
+        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu3"));
 
     }
 
@@ -99,43 +108,45 @@ public class MinecraftTerrariamodClient {
                 new BiomeMusic(ModSounds.getMusic(musicRegistryName), title)
         );
     }
-
+    private static ResourceLocation lastBiome = null;
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        // Обязательно проверяем, что игрок в мире, чтобы избежать NullPointerException
-        if (minecraft.player == null || minecraft.level == null) return;
+        if (minecraft.player == null || minecraft.level == null) {
+            lastBiome = null; // сброс при выходе из мира
+            return;
+        }
 
-        // Проверка раз в секунду
-        if (minecraft.level.getGameTime() % 20 != 0) return;
-        // Получение биома игрока
         ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
                 .unwrapKey()
                 .map(ResourceKey::location)
                 .orElse(null);
-        // Проверка ,что биом существует
         if (biomeKey == null) return;
-        MusicManager musicManager = minecraft.getMusicManager();
 
-        if (BIOME_MUSIC_MAP.containsKey(biomeKey)) {
-            BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
-            Music targetMusic = entry.music();
+        BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
 
-            // Проверяем, не играет ли уже эта конкретная музыка, чтобы не перезапускать её каждый тик
-            if (!musicManager.isPlayingMusic(targetMusic)) {
-                // Останавливаем текущую играющую музыку (если есть), иначе они наложатся
-                musicManager.stopPlaying();
-
-                // Форсированно запускаем новую фоновую музыку
-                musicManager.startPlaying(targetMusic);
-                // Уведомление о смене музыки
-
+        // Тост показываем каждый тик-проверкой смены биома (не зависит от %20)
+        if (!biomeKey.equals(lastBiome)) {
+            lastBiome = biomeKey;
+            if (entry != null) {
                 minecraft.getToasts().clear();
                 minecraft.getToasts().addToast(new TerrariaMusicToast(entry.title()));
             }
+        }
+
+        // Дальше твоя прежняя логика, раз в секунду
+        if (minecraft.level.getGameTime() % 20 != 0) return;
+
+        MusicManager musicManager = minecraft.getMusicManager();
+
+        if (entry != null) {
+            Music targetMusic = entry.music();
+            if (!musicManager.isPlayingMusic(targetMusic)) {
+                musicManager.stopPlaying();
+                musicManager.startPlaying(targetMusic);
+            }
         } else {
-            // Если условие не выполнено, останавливаем музыку
             musicManager.stopPlaying();
         }
     }
@@ -159,6 +170,52 @@ public class MinecraftTerrariamodClient {
             guiGraphics.renderFakeItem(recordStack, 9, 8);
 
             return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+        }
+    }
+    @SubscribeEvent
+    public static void onSelectMusic(SelectMusicEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+
+        // 1. ЛОГИКА ДЛЯ ИЗМЕРЕНИЯ КРАЯ (срабатывает, только если мы в игре)
+        if (minecraft.level != null && minecraft.player != null) {
+            if (minecraft.level.dimension() == net.minecraft.world.level.Level.END) {
+                ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
+                        .unwrapKey()
+                        .map(ResourceKey::location)
+                        .orElse(null);
+
+                if (biomeKey != null && BIOME_MUSIC_MAP.containsKey(biomeKey)) {
+                    event.setMusic(BIOME_MUSIC_MAP.get(biomeKey).music());
+                    return; // Если это Энд, выходим, чтобы код меню ниже не тратил ресурсы
+                }
+            }
+        }
+    }
+    private static Music activeMenuTrack = null;
+
+    @SubscribeEvent
+    public static void onSelectMenuMusic(SelectMusicEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+
+        // Проверяем, что Майнкрафт пытается включить или обновить музыку главного меню
+        if (event.getMusic().equals(net.minecraft.sounds.Musics.MENU)) {
+
+            // Если у нас еще нет выбранного трека, ИЛИ текущий трек почему-то перестал играть
+            if (activeMenuTrack == null || !minecraft.getMusicManager().isPlayingMusic(activeMenuTrack)) {
+                if (!MENU_MUSIC_LIST.isEmpty()) {
+                    // Выбираем ОДИН случайный трек и запоминаем его
+                    activeMenuTrack = MENU_MUSIC_LIST.get(RANDOM.nextInt(MENU_MUSIC_LIST.size()));
+                    System.out.println("[TerrariaMod] Выбран новый трек меню: " + activeMenuTrack.toString());
+                }
+            }
+
+            // Принудительно отдаем игре наш выбранный трек, пока он не доиграет до конца
+            if (activeMenuTrack != null) {
+                event.setMusic(activeMenuTrack);
+            }
+        } else {
+            // Если игра вышла из меню в мир, сбрасываем активный трек меню
+            activeMenuTrack = null;
         }
     }
 }

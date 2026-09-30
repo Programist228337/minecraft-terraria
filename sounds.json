@@ -1,13 +1,4 @@
 {
-  "music.menu": {
-    "sounds": [
-      {
-        "type": "file",
-        "name": "minecraftterrariamod:music/menu",
-        "stream": true
-      }
-    ]
-  },
   "music.forest": {
     "sounds": [
       {
@@ -573,5 +564,33 @@
         "stream": true
       }
     ]
+  },
+  "music.menu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/menu",
+        "stream": true
+      }
+    ]
+  },
+  "music.menu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/menu2",
+        "stream": true
+      }
+    ]
+  },
+  "music.menu3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "minecraftterrariamod:music/menu3",
+        "stream": true
+      }
+    ]
   }
 }
+

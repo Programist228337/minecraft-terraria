@@ -9,7 +9,16 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
+import net.minecraft.sounds.Music;
+import net.neoforged.neoforge.client.event.SelectMusicEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
 
+@EventBusSubscriber(modid = MinecraftTerrariamod.MODID, value = Dist.CLIENT)
 public class ModSounds {
     // Регистратор для звуков
     public static final DeferredRegister<SoundEvent> SOUNDS =
@@ -83,6 +92,10 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_GRAVELLY_HILLS_AMBIENT = registerMusic("music.windswept_gravelly_hills");
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_SAVANNA_AMBIENT = registerMusic("music.windswept_savanna");
     public static final DeferredHolder<SoundEvent, SoundEvent> WOODED_BADLANDS_AMBIENT = registerMusic("music.wooded_badlands");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BASALT_DELTAS_AMBIENT = registerMusic("music.basalt_deltas");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MENU_AMBIENT = registerMusic("music.menu");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MENU2_AMBIENT = registerMusic("music.menu2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MENU3_AMBIENT = registerMusic("music.menu3");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerMusic(String name) {
         DeferredHolder<SoundEvent, SoundEvent> holder = SOUNDS.register(name, () ->
@@ -119,5 +132,26 @@ public class ModSounds {
 
     public static void register(IEventBus eventBus) {
         SOUNDS.register(eventBus);
+    }
+    // 1. Поля класса (должны быть прямо внутри класса, вне методов)
+    private static final List<Music> MENU_MUSIC_LIST = new ArrayList<>();
+    private static final Random RANDOM = new Random();
+
+    // 2. Статический блок инициализации (чтобы заполнить список при старте игры)
+    static {
+        MENU_MUSIC_LIST.add(getMusic("music.menu"));
+        MENU_MUSIC_LIST.add(getMusic("music.menu2"));
+        MENU_MUSIC_LIST.add(getMusic("music.menu3"));
+    }
+
+    // 3. Метод подмены музыки
+    @SubscribeEvent
+    public static void onSelectMusic(SelectMusicEvent event) {
+        if (event.getMusic().equals(net.minecraft.sounds.Musics.MENU)) {
+            if (!MENU_MUSIC_LIST.isEmpty()) {
+                Music randomMenuMusic = MENU_MUSIC_LIST.get(RANDOM.nextInt(MENU_MUSIC_LIST.size()));
+                event.setMusic(randomMenuMusic);
+            }
+        }
     }
 }
