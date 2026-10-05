@@ -1,4 +1,4 @@
-package com.minecraft_terraria.mod;
+package com.minecraft_terrariamod.mod;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -83,10 +83,9 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_GRAVELLY_HILLS_AMBIENT = registerMusic("music.windswept_gravelly_hills");
     public static final DeferredHolder<SoundEvent, SoundEvent> WINDSWEPT_SAVANNA_AMBIENT = registerMusic("music.windswept_savanna");
     public static final DeferredHolder<SoundEvent, SoundEvent> WOODED_BADLANDS_AMBIENT = registerMusic("music.wooded_badlands");
-    // была добавленна строчка с базальтовыми дельтами ии пидор ебаный просто (im love gemeni <3)
     public static final DeferredHolder<SoundEvent, SoundEvent> BASALT_DELTAS_AMBIENT = registerMusic("music.basalt_deltas");
     // Три трека главного меню. Каждое имя должно совпадать с ключом в sounds.json
-    public static final DeferredHolder<SoundEvent, SoundEvent> MENU_AMBIENT  = registerMusic("music.menu");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MENU_AMBIENT = registerMusic("music.menu");
     public static final DeferredHolder<SoundEvent, SoundEvent> MENU2_AMBIENT = registerMusic("music.menu2");
     public static final DeferredHolder<SoundEvent, SoundEvent> MENU3_AMBIENT = registerMusic("music.menu3");
 
@@ -121,6 +120,22 @@ public class ModSounds {
         }
 
         return MUSIC_REGISTRY.get(name);
+    }
+
+    /**
+     * Возвращает "сырой" SoundEvent по строковому ID.
+     *
+     * Нужен для ручного проигрывания музыки с плавным затуханием (см. FadeMusicSound):
+     * мы больше не отдаём трек ванильному MusicManager, а играем его сами,
+     * поэтому нам нужен именно SoundEvent, а не объект Music.
+     */
+    public static SoundEvent getSoundEvent(String name) {
+        ResourceLocation targetKey = ResourceLocation.fromNamespaceAndPath(MinecraftTerrariamod.MODID, name);
+        return SOUNDS.getEntries().stream()
+                .filter(h -> h.getId().equals(targetKey))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("SoundEvent не зарегистрирован для ключа: " + targetKey))
+                .get();
     }
 
     public static void register(IEventBus eventBus) {
