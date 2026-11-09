@@ -4,11 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
-import net.minecraft.client.sounds.MusicManager;
+import net.minecraft.client.gui.screens.WinScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.Music;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -16,140 +16,254 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.SelectMusicEvent;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Музыка биомов и событий в стиле Террарии: при смене обстановки старый трек НЕ обрывается,
+ * а плавно затихает, пока новый плавно нарастает (кроссфейд).
+ *
+ * КАК ЭТО РАБОТАЕТ (коротко):
+ *  1. В {@link SelectMusicEvent} мы всегда отдаём null — ванильный MusicManager вообще
+ *     ничего не играет. Иначе он накладывался бы на нашу музыку (и он умеет только
+ *     резко останавливать трек — никакого фейда в 1.21.1 у него нет).
+ *  2. Раз в N тиков спрашиваем у {@link TriggerRegistry}, какая музыка сейчас уместна.
+ *     Реестр читает config/minecraftterrariamod-music.json, так что набор ситуаций
+ *     (деревня, ночь, дождь, пещера...) задаётся конфигом, а не кодом.
+ *  3. Всю музыку мы играем сами через {@link SoundManager} объектами {@link FadeMusicSound},
+ *     у которых громкость меняется каждый тик. Отсюда и плавные затухания.
+ */
 @EventBusSubscriber(modid = MinecraftTerrariamod.MODID, value = Dist.CLIENT)
 public class MinecraftTerrariamodClient {
 
-    private static final List<Music> MENU_MUSIC_LIST = new ArrayList<>();
-    private static final java.util.Random RANDOM = new java.util.Random();
-    // Вспомогательный класс для хранения музыки вместе с её названием
-    private record BiomeMusic(Music music, String title) {}
-    // Список соотношений биомов и музыки
-    private static final Map<ResourceLocation, BiomeMusic> BIOME_MUSIC_MAP = new HashMap<>();
-    static {
-        // Регистрируйте здесь любые биомы и соответствующую им музыку
-        registerBiomeMusic("minecraft:forest", "music.forest", "Forest theme");
-        registerBiomeMusic("minecraft:desert", "music.desert", "Desert theme");
-        registerBiomeMusic("minecraft:ocean", "music.ocean", "Ocean theme");
-        registerBiomeMusic("minecraft:flower_forest","music.flower_forest","Flower Forest theme");
-        registerBiomeMusic("minecraft:badlands","music.badlands","Badlands theme");
-        registerBiomeMusic("minecraft:bamboo_jungle","music.bamboo_jungle","Bamboo theme");
-        registerBiomeMusic("minecraft:beach","music.beach","Beach theme");
-        registerBiomeMusic("minecraft:birch_forest","music.birch_forest","Birch theme");
-        registerBiomeMusic("minecraft:cherry_grove","music.cherry_grove","Cherry grove theme");
-        registerBiomeMusic("minecraft:cold_ocean","music.cold_ocean","Cold ocean theme");
-        registerBiomeMusic("minecraft:crimson_forest","music.crimson_forest", "Crimson theme");
-        registerBiomeMusic("minecraft:dark_forest","music.dark_forest","Dark forest theme");
-        registerBiomeMusic( "minecraft:deep_cold_ocean",  "music.deep_cold_ocean",  "Deep cold ocean theme");
-        registerBiomeMusic( "minecraft:deep_dark",  "music.deep_dark",  "Deep dark theme");
-        registerBiomeMusic( "minecraft:deep_frozen_ocean",  "music.deep_frozen_ocean", "Deep frozen ocean theme");
-        registerBiomeMusic( "minecraft:deep_lukewarm_ocean",  "music.deep_lukewarm_ocean",  "Deep lukewarm ocean theme");
-        registerBiomeMusic( "minecraft:deep_ocean",  "music.deep_ocean",  "Deep ocean theme");
-        registerBiomeMusic( "minecraft:dripstone_caves",  "music.dripstone_caves",  "Dripstone caves theme");
-        registerBiomeMusic( "minecraft:end_barrens",  "music.end_barrens",  "End barrens theme");
-        registerBiomeMusic( "minecraft:end_highlands",  "music.end_highlands",  "End highlands theme");
-        registerBiomeMusic( "minecraft:end_midlands",  "music.end_midlands",  "End midlands theme");
-        registerBiomeMusic( "minecraft:eroded_badlands",  "music.eroded_badlands",  "Eroded badlands theme");
-        registerBiomeMusic( "minecraft:frozen_ocean",  "music.frozen_ocean",  "Frozen ocean theme");
-        registerBiomeMusic( "minecraft:frozen_peaks",  "music.frozen_peaks",  "Frozen peaks theme");
-        registerBiomeMusic( "minecraft:frozen_river",  "music.frozen_river",  "Frozen river theme");
-        registerBiomeMusic( "minecraft:ice_spikes",  "music.ice_spikes",  "Ice spikes theme");
-        registerBiomeMusic( "minecraft:jagged_peaks",  "music.jagged_peaks",  "Jagged peaks theme");
-        registerBiomeMusic( "minecraft:jungle",  "music.jungle",  "Jungle theme");
-        registerBiomeMusic( "minecraft:lukewarm_ocean",  "music.lukewarm_ocean",  "Lukewarm ocean theme");
-        registerBiomeMusic( "minecraft:lush_caves",  "music.lush_caves",  "Lush caves theme");
-        registerBiomeMusic( "minecraft:mangrove_swamp",  "music.mangrove_swamp",  "Mangrove swamp theme");
-        registerBiomeMusic( "minecraft:grove",  "music.mountain_grove",  "Mountain grove theme");
-        registerBiomeMusic( "minecraft:meadow",  "music.mountain_meadow",  "Mountain meadow theme");
-        registerBiomeMusic( "minecraft:mushroom_fields",  "music.mushroom_fields",  "Mushroom fields theme");
-        registerBiomeMusic( "minecraft:nether_wastes",  "music.nether_wastes",  "Nether wastes theme");
-        registerBiomeMusic( "minecraft:old_growth_birch_forest",  "music.old_growth_birch_forest",  "Old growth birch forest theme");
-        registerBiomeMusic( "minecraft:old_growth_pine_taiga",  "music.old_growth_pine_taiga",  "Old growth pine taiga theme");
-        registerBiomeMusic( "minecraft:old_growth_spruce_taiga", "music.old_growth_spruce_taiga",  "Old growth spruce taiga theme");
-        registerBiomeMusic( "minecraft:plains",  "music.plains",  "Plains theme");
-        registerBiomeMusic( "minecraft:river",  "music.river",  "River theme");
-        registerBiomeMusic( "minecraft:savanna", "music.savanna",  "Savanna theme");
-        registerBiomeMusic( "minecraft:savanna_plateau",  "music.savanna_plateau",  "Savanna plateau theme");
-        registerBiomeMusic( "minecraft:small_end_islands",  "music.small_end_islands",  "Small end islands theme");
-        registerBiomeMusic( "minecraft:snowy_beach",  "music.snowy_beach",  "Snowy beach theme");
-        registerBiomeMusic( "minecraft:snowy_plains",  "music.snowy_plains",  "Snowy plains theme");
-        registerBiomeMusic( "minecraft:snowy_slopes",  "music.snowy_slopes",  "Snowy slopes theme");
-        registerBiomeMusic( "minecraft:snowy_taiga",  "music.snowy_taiga",  "Snowy taiga theme");
-        registerBiomeMusic( "minecraft:soul_sand_valley",  "music.soul_sand_valley",  "Soul sand valley theme");
-        registerBiomeMusic( "minecraft:sparse_jungle",  "music.sparse_jungle",  "Sparse jungle theme");
-        registerBiomeMusic( "minecraft:stony_peaks",  "music.stony_peaks",  "Stony peaks theme");
-        registerBiomeMusic( "minecraft:stony_shore",  "music.stony_shore",  "Stony shore theme");
-        registerBiomeMusic( "minecraft:sunflower_plains",  "music.sunflower_plains",  "Sunflower plains theme");
-        registerBiomeMusic( "minecraft:swamp",  "music.swamp",  "Swamp theme");
-        registerBiomeMusic( "minecraft:taiga",  "music.taiga",  "Taiga theme");
-        registerBiomeMusic( "minecraft:the_end",  "music.the_end",  "The end theme");
-        registerBiomeMusic( "minecraft:warm_ocean",  "music.warm_ocean",  "Warm ocean theme");
-        registerBiomeMusic( "minecraft:warped_forest",  "music.warped_forest",  "Warped forest theme");
-        registerBiomeMusic( "minecraft:windswept_hills",  "music.windswept_hills",  "Windswept hills theme");
-        registerBiomeMusic( "minecraft:windswept_forest",  "music.windswept_forest",  "Windswept forest theme");
-        registerBiomeMusic( "minecraft:windswept_gravelly_hills",  "music.windswept_gravelly_hills",  "Windswept gravelly hills theme");
-        registerBiomeMusic( "minecraft:windswept_savanna",  "music.windswept_savanna",  "Windswept savanna theme");
-        registerBiomeMusic( "minecraft:wooded_badlands",  "music.wooded_badlands",  "Wooded badlands theme");
-        registerBiomeMusic("minecraft:basalt_deltas", "music.basalt_deltas", "Basalt deltas theme");
-        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu"));
-        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu2"));
-        MENU_MUSIC_LIST.add(ModSounds.getMusic("music.menu3"));
+    // ==========================================================================
+    //  МУЗЫКА ГЛАВНОГО МЕНЮ
+    // ==========================================================================
 
+    /** Имена треков меню (ключи в sounds.json / ModSounds). */
+    private static final List<String> MENU_TRACKS = List.of("music.menu", "music.menu2", "music.menu3", "music.menu4");
+    private static final Random RANDOM = new Random();
+    /** Последний игравший трек меню — чтобы не выпадал два раза подряд. */
+    private static String lastMenuTrack = null;
+    /** Ключ "мы в главном меню" (id триггера так выглядеть не может). */
+    private static final String MENU_KEY = "menu";
+
+    private static String pickRandomMenuTrack() {
+        String next;
+        do {
+            next = MENU_TRACKS.get(RANDOM.nextInt(MENU_TRACKS.size()));
+        } while (MENU_TRACKS.size() > 1 && next.equals(lastMenuTrack));
+        lastMenuTrack = next;
+        return next;
     }
 
-    private static void registerBiomeMusic(String biomeId, String musicRegistryName, String title) {
-        BIOME_MUSIC_MAP.put(
-                ResourceLocation.parse(biomeId),
-                new BiomeMusic(ModSounds.getMusic(musicRegistryName), title)
-        );
+    // ==========================================================================
+    //  СОСТОЯНИЕ КОНТРОЛЛЕРА МУЗЫКИ
+    // ==========================================================================
+
+    /** Трек, который играет (или только что начал нарастать) прямо сейчас. */
+    private static FadeMusicSound currentTrack;
+    /** Ключ активного трека: id триггера или MENU_KEY. */
+    private static String currentKey;
+    /** Сколько тиков затухает текущий трек — берём из его же триггера. */
+    private static int currentFadeOutTicks = 50;
+    /** Зациклен ли текущий трек (нужно, чтобы отличить "движок выбросил" от "доиграл"). */
+    private static boolean currentLooping = true;
+    /** Треки, которые сейчас дозатухают после смены обстановки. */
+    private static final List<FadeMusicSound> fadingOutTracks = new ArrayList<>();
+    /** Мир, к которому относится текущее состояние контроллера (для сброса при смене мира). */
+    private static ClientLevel lastLevel;
+
+    /**
+     * Сбросить состояние при смене мира.
+     *
+     * Без этого при выходе в меню или создании нового мира остаются ссылки на треки
+     * из прошлого мира и старый ключ: движок звука их уже выбросил, а контроллер
+     * считает, что "этот трек уже играет", и не запускает нужный.
+     */
+    private static void resetIfLevelChanged(Minecraft minecraft) {
+        ClientLevel level = minecraft.level;
+        if (level == lastLevel) {
+            return;
+        }
+        lastLevel = level;
+
+        currentTrack = null;
+        currentKey = null;
+        currentLooping = true;
+        currentFadeOutTicks = TriggerRegistry.defaultFadeOutTicks();
+        fadingOutTracks.clear();
     }
-    private static ResourceLocation lastBiome = null;
+
+    // ==========================================================================
+    //  ОСНОВНАЯ ЛОГИКА
+    // ==========================================================================
+
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
+        SoundManager soundManager = minecraft.getSoundManager();
 
-        if (minecraft.player == null || minecraft.level == null) {
-            lastBiome = null; // сброс при выходе из мира
+        // --- 0. Сменился мир (или вышли в меню) — сбрасываем прошлое состояние ---
+        resetIfLevelChanged(minecraft);
+
+        // --- 1. Подтянуть конфиг (и подхватить правки на лету) ---
+        TriggerRegistry.ensureLoaded();
+
+        // --- 2. Убираем треки, которые уже дозатухли или доиграли ---
+        fadingOutTracks.removeIf(track -> track.isStopped() || !soundManager.isActive(track));
+
+        // --- 3. Следим за активным треком ---
+        if (currentTrack != null) {
+            if (soundManager.isActive(currentTrack)) {
+                currentTrack.markPlaying();
+            } else {
+                boolean wasHeard = currentTrack.wasPlaying();
+                currentTrack = null;
+
+                if (!wasHeard || currentLooping) {
+                    // Либо трек так и не заиграл, либо зацикленный трек выбросило движком —
+                    // в обоих случаях сбрасываем ключ, чтобы контроллер запустил его заново.
+                    currentKey = null;
+                }
+                // Не-зацикленный трек (например титры) просто доиграл до конца: ключ
+                // оставляем, иначе он перезапускался бы бесконечно.
+            }
+        }
+
+        boolean inWorld = minecraft.player != null && minecraft.level != null;
+
+        // --- 4. Экран титров: отдельная ветка, он бывает и в мире, и из главного меню ---
+        if (minecraft.screen instanceof WinScreen) {
+            applyTrigger(minecraft, soundManager, TriggerRegistry.resolve(minecraft));
             return;
         }
 
-        ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
-                .unwrapKey()
-                .map(ResourceKey::location)
-                .orElse(null);
-        if (biomeKey == null) return;
-
-        BiomeMusic entry = BIOME_MUSIC_MAP.get(biomeKey);
-
-        // Тост показываем каждый тик-проверкой смены биома (не зависит от %20)
-        if (!biomeKey.equals(lastBiome)) {
-            lastBiome = biomeKey;
-            if (entry != null) {
-                minecraft.getToasts().clear();
-                minecraft.getToasts().addToast(new TerrariaMusicToast(entry.title()));
+        // --- 5. В мире условия проверяем раз в N тиков (в конфиге, по умолчанию 10) ---
+        if (inWorld) {
+            long interval = TriggerRegistry.checkIntervalTicks();
+            if (minecraft.level.getGameTime() % interval != 0L) {
+                return;
             }
+            applyTrigger(minecraft, soundManager, TriggerRegistry.resolve(minecraft));
+            return;
         }
 
-        // Дальше твоя прежняя логика, раз в секунду
-        if (minecraft.level.getGameTime() % 20 != 0) return;
+        // --- 6. Не в мире: главное меню, проверяем каждый тик ---
+        if (MENU_KEY.equals(currentKey) && currentTrack != null) {
+            return;
+        }
+        if (currentTrack != null) {
+            fadeOut(currentTrack, currentFadeOutTicks);
+            currentTrack = null;
+        }
 
-        MusicManager musicManager = minecraft.getMusicManager();
+        // В меню треки должны сменять друг друга -> не зацикливаем.
+        startTrack(minecraft, soundManager, MENU_KEY, pickRandomMenuTrack(), null, false,
+                TriggerRegistry.defaultFadeInTicks(), TriggerRegistry.defaultFadeOutTicks(), false);
+    }
 
-        if (entry != null) {
-            Music targetMusic = entry.music();
-            if (!musicManager.isPlayingMusic(targetMusic)) {
-                musicManager.stopPlaying();
-                musicManager.startPlaying(targetMusic);
+    /**
+     * Привести музыку в соответствие с найденным триггером.
+     *
+     * @param trigger подходящий триггер или null, если сейчас музыки быть не должно
+     */
+    private static void applyTrigger(Minecraft minecraft, SoundManager soundManager, MusicTrigger trigger) {
+        // Ни одно условие не подошло: плавно уводим текущую музыку в тишину
+        if (trigger == null) {
+            if (currentTrack != null) {
+                fadeOut(currentTrack, currentFadeOutTicks);
+                currentTrack = null;
             }
-        } else {
-            musicManager.stopPlaying();
+            currentKey = null;
+            return;
+        }
+
+        // Уже играет то, что нужно — ничего не трогаем.
+        // Для не-зацикленного трека, который уже доиграл, тоже ничего не делаем.
+        if (trigger.id.equals(currentKey) && (currentTrack != null || !trigger.looping)) {
+            return;
+        }
+
+        // Смена трека: старое затихает, новое нарастает (кроссфейд).
+        // Гасим ровно столько, сколько новый трек будет нарастать, — так они
+        // меняются синхронно и в сумме не «бубнят» два трека разом.
+        if (currentTrack != null) {
+            fadeOut(currentTrack, Math.min(currentFadeOutTicks, trigger.fadeInTicks));
+            currentTrack = null;
+        }
+
+        startTrack(minecraft, soundManager, trigger.id, trigger.sound, trigger.title,
+                trigger.looping, trigger.fadeInTicks, trigger.fadeOutTicks, true);
+    }
+
+    /**
+     * Запустить трек и сделать его текущим.
+     *
+     * @param key         ключ для сравнения "что уже играет"
+     * @param soundName   ключ трека в ModSounds/sounds.json
+     * @param title       подпись для тоста (может быть null)
+     * @param looping     true — играть бесконечно
+     * @param fadeInTicks сколько тиков нарастать
+     * @param fadeOutTicks сколько тиков затухать, когда придёт время уходить
+     * @param showToast   показывать ли тост "сейчас играет"
+     */
+    private static void startTrack(Minecraft minecraft, SoundManager soundManager, String key, String soundName,
+                                   String title, boolean looping, int fadeInTicks, int fadeOutTicks,
+                                   boolean showToast) {
+        SoundEvent soundEvent = ModSounds.getSoundEvent(soundName);
+        if (soundEvent == null) {
+            // Такое возможно только если трек убрали из ModSounds, а триггер в конфиге остался.
+            // Не роняем игру, просто пропускаем.
+            MinecraftTerrariamod.LOGGER.warn("[Музыка] Трек '{}' не зарегистрирован — пропускаю", soundName);
+            currentTrack = null;
+            currentKey = null;
+            return;
+        }
+
+        FadeMusicSound track = new FadeMusicSound(soundEvent, 0.0F, looping);
+        track.fadeTo(1.0F, fadeInTicks);
+        soundManager.play(track);
+
+        currentTrack = track;
+        currentKey = key;
+        currentFadeOutTicks = fadeOutTicks;
+        currentLooping = looping;
+
+        // Тост с названием трека показываем только для триггеров, не для меню
+        if (showToast) {
+            minecraft.getToasts().clear();
+            minecraft.getToasts().addToast(new TerrariaMusicToast(title));
         }
     }
+
+    /** Отправить трек в плавное затухание. */
+    private static void fadeOut(FadeMusicSound track, int ticks) {
+        track.fadeTo(0.0F, ticks);
+        fadingOutTracks.add(track);
+    }
+
+    // ==========================================================================
+    //  ЗАБИРАЕМ МУЗЫКУ У ВАНИЛЬНОГО MUSICMANAGER
+    // ==========================================================================
+
+    /**
+     * Возвращаем null — это официально поддерживаемый способ сказать игре
+     * "ничего не играй, музыку контролирую я".
+     *
+     * Проверено по исходникам 1.21.1: MusicManager.tick() при music == null вызывает
+     * stopPlaying() и выходит, поэтому ванильная музыка действительно замолкает.
+     */
+    @SubscribeEvent
+    public static void onSelectMusic(SelectMusicEvent event) {
+        event.setMusic(null);
+    }
+
+    // ==========================================================================
+    //  ТОСТ "СЕЙЧАС ИГРАЕТ"
+    // ==========================================================================
 
     private static class TerrariaMusicToast implements Toast {
         private final String trackName;
@@ -170,52 +284,6 @@ public class MinecraftTerrariamodClient {
             guiGraphics.renderFakeItem(recordStack, 9, 8);
 
             return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
-        }
-    }
-    @SubscribeEvent
-    public static void onSelectMusic(SelectMusicEvent event) {
-        Minecraft minecraft = Minecraft.getInstance();
-
-        // 1. ЛОГИКА ДЛЯ ИЗМЕРЕНИЯ КРАЯ (срабатывает, только если мы в игре)
-        if (minecraft.level != null && minecraft.player != null) {
-            if (minecraft.level.dimension() == net.minecraft.world.level.Level.END) {
-                ResourceLocation biomeKey = minecraft.level.getBiome(minecraft.player.blockPosition())
-                        .unwrapKey()
-                        .map(ResourceKey::location)
-                        .orElse(null);
-
-                if (biomeKey != null && BIOME_MUSIC_MAP.containsKey(biomeKey)) {
-                    event.setMusic(BIOME_MUSIC_MAP.get(biomeKey).music());
-                    return; // Если это Энд, выходим, чтобы код меню ниже не тратил ресурсы
-                }
-            }
-        }
-    }
-    private static Music activeMenuTrack = null;
-
-    @SubscribeEvent
-    public static void onSelectMenuMusic(SelectMusicEvent event) {
-        Minecraft minecraft = Minecraft.getInstance();
-
-        // Проверяем, что Майнкрафт пытается включить или обновить музыку главного меню
-        if (event.getMusic().equals(net.minecraft.sounds.Musics.MENU)) {
-
-            // Если у нас еще нет выбранного трека, ИЛИ текущий трек почему-то перестал играть
-            if (activeMenuTrack == null || !minecraft.getMusicManager().isPlayingMusic(activeMenuTrack)) {
-                if (!MENU_MUSIC_LIST.isEmpty()) {
-                    // Выбираем ОДИН случайный трек и запоминаем его
-                    activeMenuTrack = MENU_MUSIC_LIST.get(RANDOM.nextInt(MENU_MUSIC_LIST.size()));
-                    System.out.println("[TerrariaMod] Выбран новый трек меню: " + activeMenuTrack.toString());
-                }
-            }
-
-            // Принудительно отдаем игре наш выбранный трек, пока он не доиграет до конца
-            if (activeMenuTrack != null) {
-                event.setMusic(activeMenuTrack);
-            }
-        } else {
-            // Если игра вышла из меню в мир, сбрасываем активный трек меню
-            activeMenuTrack = null;
         }
     }
 }
